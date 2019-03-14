@@ -1,9 +1,10 @@
 import { createStackNavigator } from 'react-navigation';
 import Home from '../../Home';
+import * as screenNames from '../screen_names';
 
 const HomeStack = createStackNavigator( // Planned Screens: Home, Detail
 	{
-		Home: {
+		[ screenNames.HOME ]: {
 			screen: Home,
 		}
 	},
