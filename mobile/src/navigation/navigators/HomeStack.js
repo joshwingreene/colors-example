@@ -1,11 +1,15 @@
 import { createStackNavigator } from 'react-navigation';
-import Home from '../../Home';
+import HomeScreen from '../../features/home/containers/homeScreen';
+import DetailScreen from '../../features/home/containers/detailScreen';
 import * as screenNames from '../screen_names';
 
 const HomeStack = createStackNavigator( // Planned Screens: Home, Detail
 	{
 		[ screenNames.HOME ]: {
-			screen: Home,
+			screen: HomeScreen,
+		},
+		[ screenNames.DETAIL ]: {
+			screen: DetailScreen,
 		}
 	},
 	{
