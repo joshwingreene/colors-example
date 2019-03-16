@@ -2,10 +2,11 @@
 
 import { connect } from 'react-redux'
 import ColorGrid from '../components/ColorGrid';
-import { selectColor } from '../actions/index';
+import { selectColor } from '../actions';
 
 const mapStateToProps = state => ({ // Describes how to transform the current Redux store state into the props you want to pass to a presentational component you are wrapping
-  colors: state.colors
+  colors: state.colors,
+  selectedColorIndex: state.selectedColorIndex
 })
 
 const mapDispatchToProps = dispatch => ({ // Receives the dispatch() method and returns callback props that you want to inject into the presentational component

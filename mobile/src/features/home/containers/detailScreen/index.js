@@ -1,7 +1,7 @@
 // Mixed Component
 
 import React, { Component } from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import { toggleColor } from '../../actions';
 
@@ -11,17 +11,19 @@ class DetailScreen extends Component { // DetailScreen's container components wi
 
         const params = navigation.state.params || {};
 
-        if (params.colorFromState && params.colorIndex && params.toggleColor) {
+        console.log('navigationOptions - params: ', params);
+
+        if (params.selectedColor && params.toggleColor && params.selectedColorIndex != null) { // changed params.colorIndex to != null since 0 is equal to false in javascript
 
             return {
                 title: 'Color',
                 headerRight: (
                     <Button
                         onPress={() => {
-                                params.toggleColor(params.colorIndex);
+                                params.toggleColor(params.selectedColorIndex);
                             }
                         }
-                        title={ params.colorFromState.isSaved ? 'Saved' : 'Save' }
+                        title={ params.selectedColor.isSaved ? 'Saved' : 'Save' }
                     />
                 )
             }
@@ -31,38 +33,54 @@ class DetailScreen extends Component { // DetailScreen's container components wi
     componentDidMount = () => {
         console.log('componentDidMount');
 
-        this.props.navigation.setParams( { colorFromState: this.props.color, toggleColor: (index) => this.props.dispatch(toggleColor(index)) });
+        this.props.navigation.setParams( { selectedColorIndex: this.props.selectedColorIndex, selectedColor: this.props.color, toggleColor: (index) => this.props.dispatch(toggleColor(index)) });
         //this.props.navigation.setParams( { toggleColor: (index) => this.props.toggleColor(index) }); // ex - if I wanted to use mapDispatchToProps
     }
 
-    updateColorParam = () => { // This is the only way in which I was able to update the color param after the app state is changed after Save/Saved toggle is pressed.
-        this.props.navigation.setParams( { colorFromState: this.props.color });
+    updateColorParam = () => { // This is the only way in which I was able to update the color param after the app state was changed after Save/Saved toggle is pressed. (while following the design anyways)
+        this.props.navigation.setParams( { selectedColor: this.props.color });
     }
 
     render() {
         console.log('DetailScreen - render');
 
-        console.log('colorFromState: ', this.props.color);
+        console.log('selectedColor: ', this.props.color);
 
-        if (this.props.navigation.state.params.colorFromState && this.props.navigation.state.params.colorFromState.isSaved != this.props.color.isSaved) {
+        console.log('detailScreen - params - ', this.props.navigation.state.params); // undefined at first (defined once setParams is called by componentDidMount)
+
+        if (this.props.navigation.state.params && this.props.navigation.state.params.selectedColor.isSaved != this.props.color.isSaved) {
             console.log('navigationOptions and this.props.color aren\'t the same');
             this.updateColorParam();
         }
 
 		return (
-			<View style={{ flex: 1, alignItems: 'center' }}>
-                <Text>{ this.props.color.hexColor }</Text>
+			<View style={ styles.container }>
+                <View style={[ styles.coloredView, { backgroundColor: this.props.color.hexColor } ]}></View>
+                <Text style={ styles.hexColorText }>{ this.props.color.hexColor }</Text>
 			</View>
 		)
 	}
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1, alignItems: 'center'
+    },
+    coloredView: {
+        width: '100%', height: '50%'
+    },
+    hexColorText: {
+        marginTop: 20, fontWeight: '700', fontSize: 25
+    }
+});
 
 const getChosenColor = (colors, selectedColorIndex) => {
     return colors.filter((color, index) => index == selectedColorIndex)[0];
 }
 
 const mapStateToProps = (state) => ({ // Describes how to transform the current Redux store state into the props you want to pass to a presentational component you are wrapping
-    color: getChosenColor(state.colors, state.selectedColorIndex)
+    color: getChosenColor(state.colors, state.selectedColorIndex),
+    selectedColorIndex: state.selectedColorIndex
 })
 
 /* ex - if I wanted to use mapDispatchToProps

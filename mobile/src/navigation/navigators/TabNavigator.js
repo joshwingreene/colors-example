@@ -2,12 +2,15 @@ import React from 'react';
 import { createBottomTabNavigator } from 'react-navigation';
 import HomeStack from './HomeStack';
 import SavedStack from './SavedStack';
+import SettingsStack from './SettingsStack';
+
 //import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const TabNavigator = createBottomTabNavigator(
 	{
 		Home: HomeStack,
 		Saved: SavedStack,
+		Settings: SettingsStack
 	},
 	{
 		// TODO: Follow the steps in order to import the MaterialIcons bundled by react-native-vector-icons - https://github.com/oblador/react-native-vector-icons

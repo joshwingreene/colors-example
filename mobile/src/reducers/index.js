@@ -13,27 +13,51 @@ const initialState = {
 		{ hexColor: '#7c41f4', isSaved: false },
 		{ hexColor: '#f441a6', isSaved: false }
 	],
-	selectedColorIndex: null
-  }
+	selectedColorIndex: null,
+	//settingsToggleValue: false
+}
+
+function settingsData(state = false, action) {
+	switch (action.type) {
+		case 'TOGGLE_BTN':
+			return Object.assign({}, state, { settingsToggleValue: !state.settingsToggleValue })
+		default:
+			return state
+	}
+}
 
 export default function colorsApp(state = initialState, action) {
 	switch (action.type) {
-        case 'TOGGLE_COLOR': // this should be done in the nav bar
-            return Object.assign({}, state, {
-				colors: state.colors.map((color, index) => {
-					if (index === action.index) {
-						return Object.assign({}, color, {
-							isSaved: !color.isSaved
+			case 'TOGGLE_COLOR':
+					return Object.assign({}, state, {
+						colors: state.colors.map((color, index) => {
+							if (index === action.index) {
+								return Object.assign({}, color, {
+									isSaved: !color.isSaved
+								})
+							}
+							return color
 						})
-					}
-					return color
-				} )
-			})
-		case 'SELECT_COLOR':
-			return Object.assign({}, state, { selectedColorIndex: action.index })
-        default:
-            return state
-        }
+					})
+			case 'SELECT_COLOR':
+				return Object.assign({}, state, { selectedColorIndex: action.index })
+			case 'REMOVE_SAVED_COLOR':
+					return Object.assign({}, state, {
+						colors: state.colors.map((color) => {
+							if (color.hexColor == action.hexColor) {
+								return Object.assign({}, color, {
+									isSaved: false
+								})
+							}
+							return color
+						})
+					})
+			case 'TOGGLE_BTN':
+					//return Object.assign({}, state, { settingsToggleValue: !state.settingsToggleValue })
+					return Object.assign({}, state, { settingsToggleValue: settingsData(state.settingsToggleValue, action) })
+			default:
+					return state
+	}
 }
 
 /*

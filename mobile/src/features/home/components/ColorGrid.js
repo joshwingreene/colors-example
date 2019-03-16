@@ -9,17 +9,15 @@ export default class ColorGrid extends Component {
 
 	render() {
 
-        console.log('colors: ', this.props.colors);
+        console.log('ColorGrid - colors: ', this.props.colors);
 
 		return (
             <ScrollView contentInsetAdjustmentBehavior="automatic">
                 <View style={styles.colors}>
                     { this.props.colors.map((color, index) => (
-                        //<ColorTile key={index} color={color} onPress={ () => this.props.toggleColor(index) } />
-                        //<ColorTile key={index} color={color} onPress={ () => this.props.screen.props.navigation.navigate('Detail') } />
                         <ColorTile key={index} color={color} onPress={ () => {
                             this.props.selectColor(index);
-                            this.props.pushToScreen(index)
+                            this.props.pushToScreen()
                             } } />
                     ))}
                 </View>

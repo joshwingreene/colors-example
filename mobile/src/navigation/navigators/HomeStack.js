@@ -3,7 +3,7 @@ import HomeScreen from '../../features/home/containers/homeScreen';
 import DetailScreen from '../../features/home/containers/detailScreen';
 import * as screenNames from '../screen_names';
 
-const HomeStack = createStackNavigator( // Planned Screens: Home, Detail
+const HomeStack = createStackNavigator(
 	{
 		[ screenNames.HOME ]: {
 			screen: HomeScreen,
