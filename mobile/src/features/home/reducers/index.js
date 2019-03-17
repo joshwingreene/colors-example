@@ -1,16 +1,10 @@
-//import { combineReducers } from 'redux'
-import colors from './colors'
+import fetchedColors from './fetchedColors';
+import selectedColorIndex from './selectedColorIndex';
 
-/*
-export default combineReducers({
-	colors,
-	savedColors
-})
-*/
-
-export default function homeSection(state, action) { // using until more parts of the goal section state become operational
-	
+export default function homeData(state = {}, action) {
+	console.log('homeData - state - ', state);
 	return {
-	  colors: colors(state.colors, action) // state.colors is currently giving me an error (Let's finish that Redux tutorial first and then come back to this)
+		fetchedColors: fetchedColors(state.fetchedColors, action),
+		selectedColorIndex: selectedColorIndex(state.selectedColorIndex, action)
 	}
 }

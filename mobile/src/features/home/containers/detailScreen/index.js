@@ -14,7 +14,7 @@ class DetailScreen extends Component { // DetailScreen's container components wi
 
         console.log('navigationOptions - params: ', params);
 
-        if (params.selectedColor && params.saveColor && params.removeColor && params.isColorSaved != null) { // changed params.colorIndex to != null since 0 is equal to false in javascript
+        if (params.selectedColor && params.saveColor && params.removeColor && params.isColorSaved != null) {
 
             return {
                 title: 'Color',
