@@ -3,7 +3,8 @@
 import React, { Component } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
-import { toggleColor, resetColorSelection } from '../../actions';
+import { saveColor, resetColorSelection } from '../../actions';
+import { removeColor } from '../../../saved/actions';
 
 class DetailScreen extends Component { // DetailScreen's container components will be invoked here
     
@@ -13,17 +14,21 @@ class DetailScreen extends Component { // DetailScreen's container components wi
 
         console.log('navigationOptions - params: ', params);
 
-        if (params.selectedColor && params.toggleColor && params.selectedColorIndex != null) { // changed params.colorIndex to != null since 0 is equal to false in javascript
+        if (params.selectedColor && params.saveColor && params.removeColor && params.isColorSaved != null) { // changed params.colorIndex to != null since 0 is equal to false in javascript
 
             return {
                 title: 'Color',
                 headerRight: (
                     <Button
                         onPress={() => {
-                                params.toggleColor(params.selectedColorIndex);
+                                if (params.isColorSaved) {
+                                    params.removeColor(params.selectedColor.hexColor);
+                                } else {
+                                    params.saveColor(params.selectedColor.hexColor);
+                                }  
                             }
                         }
-                        title={ params.selectedColor.isSaved ? 'Saved' : 'Save' }
+                        title={ params.isColorSaved ? 'Saved' : 'Save' }
                     />
                 )
             }
@@ -33,7 +38,12 @@ class DetailScreen extends Component { // DetailScreen's container components wi
     componentDidMount = () => {
         console.log('DetailScreen - componentDidMount');
 
-        this.props.navigation.setParams( { selectedColorIndex: this.props.selectedColorIndex, selectedColor: this.props.color, toggleColor: (index) => this.props.dispatch(toggleColor(index)) });
+        this.props.navigation.setParams({ 
+            selectedColor: this.props.color, 
+            saveColor: (hexColor) => this.props.dispatch(saveColor(hexColor)),
+            removeColor: (hexColor) => this.props.dispatch(removeColor(hexColor)),
+            isColorSaved: this.checkIfColorIsSaved()
+        });
     }
 
     componentWillUnmount = () => {
@@ -41,8 +51,22 @@ class DetailScreen extends Component { // DetailScreen's container components wi
         this.props.dispatch(resetColorSelection());
     }
 
-    updateColorParam = () => { // This is the only way in which I was able to update the color param after the app state was changed after Save/Saved toggle is pressed. (while following the design anyways)
-        this.props.navigation.setParams( { selectedColor: this.props.color });
+    updateColorSavedParam = () => { // Like with updateColorParams from before, this is the only way in which I was able to update the color param after the app state was changed after Save/Saved toggle is pressed. (while following the design anyways)
+        this.props.navigation.setParams( { isColorSaved: this.checkIfColorIsSaved() });
+    }
+
+    checkIfColorIsSaved = () => {
+        let isSaved = false;
+    
+        console.log('checkIfColorIsSaved - savedColors - ', this.props.savedColors);
+
+        for (let i = 0; i < this.props.savedColors.length; i++) {
+            if (this.props.savedColors[i].hexColor == this.props.color.hexColor ) {
+                isSaved = true;
+            }
+        }
+
+        return isSaved;
     }
 
     render() {
@@ -52,9 +76,9 @@ class DetailScreen extends Component { // DetailScreen's container components wi
 
         console.log('detailScreen - params - ', this.props.navigation.state.params); // undefined at first (defined once setParams is called by componentDidMount)
 
-        if (this.props.navigation.state.params && this.props.navigation.state.params.selectedColor.isSaved != this.props.color.isSaved) {
-            console.log('navigationOptions and this.props.color aren\'t the same');
-            this.updateColorParam();
+        if (this.props.navigation.state.params && this.props.navigation.state.params.isColorSaved != this.checkIfColorIsSaved() ) {
+            console.log('navigationOptions\'s isColorSaved and result of checkIfColorIsSaved aren\'t the same');
+            this.updateColorSavedParam();
         }
 
 		return (
@@ -83,8 +107,9 @@ const getChosenColor = (colors, selectedColorIndex) => {
 }
 
 const mapStateToProps = (state) => ({ // Describes how to transform the current Redux store state into the props you want to pass to a presentational component you are wrapping
-    color: getChosenColor(state.colorsData.colors, state.colorsData.selectedColorIndex),
-    selectedColorIndex: state.colorsData.selectedColorIndex
+    color: getChosenColor(state.homeData.fetchedColors, state.homeData.selectedColorIndex),
+    selectedColorIndex: state.homeData.selectedColorIndex,
+    savedColors: state.savedData.savedColors
 })
 
 export default connect(mapStateToProps, null)(DetailScreen);

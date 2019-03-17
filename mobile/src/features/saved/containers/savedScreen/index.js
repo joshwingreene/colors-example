@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = state => ({ // savedColors - each item needs to have a unique id for the FlatList in SavedColorList
-  savedColors: state.colorsData.colors.filter(c => c.isSaved).map((color, index) => ({ id: color.hexColor, hexColor: color.hexColor, isSaved: color.isSaved }))
+  savedColors: state.savedData.savedColors.map((color) => ({ id: color.hexColor, hexColor: color.hexColor }))
 });
 
 export default connect(mapStateToProps, null)(SavedScreen);

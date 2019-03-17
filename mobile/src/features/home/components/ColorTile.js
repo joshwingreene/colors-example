@@ -32,6 +32,5 @@ const styles = StyleSheet.create({
 ColorTile.propTypes = {
 	color: PropTypes.shape({
       hexColor: PropTypes.string.isRequired,
-      isSaved: PropTypes.bool.isRequired,
 	}).isRequired
   }

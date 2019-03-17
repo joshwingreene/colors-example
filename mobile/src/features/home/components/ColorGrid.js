@@ -9,12 +9,12 @@ export default class ColorGrid extends Component {
 
 	render() {
 
-        console.log('ColorGrid - colors: ', this.props.colors);
+        console.log('ColorGrid - fetchedColors: ', this.props.fetchedColors);
 
 		return (
             <ScrollView contentInsetAdjustmentBehavior="automatic">
                 <View style={styles.colors}>
-                    { this.props.colors.map((color, index) => (
+                    { this.props.fetchedColors.map((color, index) => (
                         <ColorTile key={index} color={color} onPress={ () => {
                             this.props.selectColor(index);
                             this.props.pushToScreen()
@@ -36,8 +36,7 @@ const styles = StyleSheet.create({
   });
 
 ColorGrid.propTypes = {
-	colors: PropTypes.arrayOf(PropTypes.shape({
-      hexColor: PropTypes.string.isRequired,
-      isSaved: PropTypes.bool.isRequired,
+	fetchedColors: PropTypes.arrayOf(PropTypes.shape({
+      hexColor: PropTypes.string.isRequired
 	}).isRequired).isRequired
   }

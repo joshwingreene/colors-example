@@ -50,9 +50,8 @@ const styles = StyleSheet.create({
   });
 
   SavedColorList.propTypes = {
-	savedColors: PropTypes.arrayOf(PropTypes.shape({
-      hexColor: PropTypes.string.isRequired,
-      isSaved: PropTypes.bool.isRequired,
-    }).isRequired).isRequired,
-    removeColor: PropTypes.func.isRequired
+		savedColors: PropTypes.arrayOf(PropTypes.shape({
+				hexColor: PropTypes.string.isRequired,
+			}).isRequired).isRequired,
+			removeColor: PropTypes.func.isRequired
   }

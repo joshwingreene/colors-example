@@ -2,9 +2,9 @@ export const fetchColors = () => ({
     type: 'FETCH_COLORS'
 })
 
-export const toggleColor = index => ({
-    type: 'TOGGLE_COLOR',
-    index
+export const saveColor = hexColor => ({
+    type: 'SAVE_COLOR',
+    hexColor
 })
 
 export const selectColor = index => ({

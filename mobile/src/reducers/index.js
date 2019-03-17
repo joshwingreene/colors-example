@@ -1,25 +1,4 @@
-//import { combineReducers } from "redux";
-//import homeSection from "../features/home/reducers"
-//import savedSection from "../features/saved/reducers"
-
-/*
-const initialState = {
-	colors: [
-		{ hexColor: '#4286f4', isSaved: false },
-		{ hexColor: '#41f465', isSaved: false },
-		{ hexColor: '#f1f441', isSaved: false },
-		{ hexColor: '#f4bb41', isSaved: false },
-		{ hexColor: '#f44641', isSaved: false },
-		{ hexColor: '#4161f4', isSaved: false },
-		{ hexColor: '#7c41f4', isSaved: false },
-		{ hexColor: '#f441a6', isSaved: false }
-	],
-	selectedColorIndex: null,
-	//settingsToggleValue: false
-}
-*/
-
-/* Planned State Tree
+/* State Tree
 
 {
 	homeData: {
@@ -37,17 +16,6 @@ const initialState = {
 
 */
 
-const initialColors = [
-	{ hexColor: '#4286f4', isSaved: false },
-		{ hexColor: '#41f465', isSaved: false },
-		{ hexColor: '#f1f441', isSaved: false },
-		{ hexColor: '#f4bb41', isSaved: false },
-		{ hexColor: '#f44641', isSaved: false },
-		{ hexColor: '#4161f4', isSaved: false },
-		{ hexColor: '#7c41f4', isSaved: false },
-		{ hexColor: '#f441a6', isSaved: false }
-];
-
 const staticFetchedColors = [
 	{ hexColor: '#4286f4' },
 	{ hexColor: '#41f465' },
@@ -58,6 +26,61 @@ const staticFetchedColors = [
 	{ hexColor: '#7c41f4' },
 	{ hexColor: '#f441a6' }
 ];
+
+function fetchedColors(fetchedColors = staticFetchedColors, action) {
+	switch(action.type) {
+		/*
+		case 'FETCH_COLORS':
+				return state
+		*/
+		default:
+			return fetchedColors
+	}
+}
+
+function selectedColorIndex(value = null, action) {
+	switch(action.type) {
+		case 'SELECT_COLOR':
+			return action.index
+		case 'RESET_COLOR_SELECTION':
+			return null
+		default:
+			return value
+	}
+}
+
+function homeData(state = {}, action) {
+	console.log('homeData - state - ', state);
+	return {
+		fetchedColors: fetchedColors(state.fetchedColors, action),
+		selectedColorIndex: selectedColorIndex(state.selectedColorIndex, action)
+	}
+}
+
+function savedData(state = { savedColors: [] }, action) {
+	switch (action.type) {
+		case 'SAVE_COLOR':
+				return Object.assign({}, state, { savedColors: [ ...state.savedColors, { hexColor: action.hexColor } ] })
+		case 'REMOVE_SAVED_COLOR':
+				// get the index of the color that will be removed
+				let indexOfColor = null;
+
+				for (let i = 0; i < state.savedColors.length; i++) {
+					if (state.savedColors[i].hexColor == action.hexColor) {
+						indexOfColor = i;
+					}
+				}
+
+				// create a new array with only the surrounding colors
+				let copiedArray = state.savedColors.slice();
+
+				copiedArray.splice(indexOfColor, 1);
+
+				return Object.assign({}, state, { savedColors: copiedArray })
+		default:
+			return state
+	}
+}
 
 function settingsData(state = { toggleValue: false }, action) {
 	switch (action.type) {
@@ -72,161 +95,11 @@ function settingsData(state = { toggleValue: false }, action) {
 	}
 }
 
-function fetchedColors(state = initialColors, action) {
-	switch(action.type) {
-		case 'TOGGLE_COLOR':
-				return state.colors.map((color, index) => {
-						if (index === action.index) {
-							return Object.assign({}, color, {
-								isSaved: !color.isSaved
-							})
-						}
-						return color
-				})
-		default:
-				state
-	}
-}
-
-function selectedColor(state = null, action) {
-	switch(action.type) {
-		case 'SELECT_COLOR':
-			return action.index
-		case 'RESET_COLOR_SELECTION':
-			return null
-		default:
-			state
-	}
-}
-
-function homeData(state = { colors: initialColors, selectedColorIndex: null }, action) {
-	switch (action.type) {
-		case 'TOGGLE_COLOR':
-			return Object.assign({}, state, { colors: fetchedColors(state.colors, action) })
-		case 'SELECT_COLOR':
-			return Object.assign({}, state, { selectedColorIndex: selectedColor(state.selectedColorIndex, action) })
-		case 'RESET_COLOR_SELECTION':
-			return Object.assign({}, state, { selectedColorIndex: selectedColor(state.selectedColorIndex, action) })
-		default:
-			return state
-	}
-}
-
-function savedData(state = [], action) {
-
-}
-
-function colorsData(state = { colors: initialColors, selectedColorIndex: null }, action) {
-	console.log('colorsData - state - ', state);
-	switch (action.type) {
-		/*
-		case 'FETCH_COLORS':
-				return state
-		*/
-		case 'TOGGLE_COLOR':
-				return Object.assign({}, state, {
-					colors: state.colors.map((color, index) => {
-						if (index === action.index) {
-							return Object.assign({}, color, {
-								isSaved: !color.isSaved
-							})
-						}
-						return color
-					})
-				})
-		case 'SELECT_COLOR':
-			return Object.assign({}, state, { selectedColorIndex: action.index })
-		case 'RESET_COLOR_SELECTION':
-			return Object.assign({}, state, { selectedColorIndex: null })
-		case 'REMOVE_SAVED_COLOR':
-			return Object.assign({}, state, {
-				colors: state.colors.map((color) => {
-					if (color.hexColor == action.hexColor) {
-						return Object.assign({}, color, {
-							isSaved: false
-						})
-					}
-					return color
-				})
-			})
-		default: 
-			return state
-	}
-}
-
 export default function colorsApp(state = {}, action) {
+	console.log('colorsApp - action - ', action);
 	return {
-		colorsData: colorsData(state.colorsData, action),
+		homeData: homeData(state.homeData, action),
+		savedData: savedData(state.savedData, action),
 		settingsData: settingsData(state.settingsData, action)
 	}
 }
-
-/*
-export default function colorsApp(state = { colorsData: { colors: initialColors, selectedColorIndex: null }, settingsData: { toggleValue: false } }, action) { 
-	// Important: those fetch actions were necessary because I didn't provide the initial state here (tested), which means that initializing the state in colorsData and settingsData should also be removed (tested)
-	// However, the point is that I want to split up the initialization and management of the state. So, the above root reducer is what I need to use to initialize the state for each slice )
-	
-	console.log('colorsApp');
-	switch (action.type) {
-			case 'FETCH_COLORS':
-				return Object.assign({}, state, { colorsData: colorsData(state.colorsData, action) })
-			case 'TOGGLE_COLOR':
-				return Object.assign({}, state, { colorsData: colorsData(state.colorsData, action) })
-			case 'SELECT_COLOR':
-				return Object.assign({}, state, { colorsData: colorsData(state.colorsData, action) })
-			case 'RESET_COLOR_SELECTION':
-				return Object.assign({}, state, { colorsData: colorsData(state.colorsData, action) })
-			case 'REMOVE_SAVED_COLOR':
-				return Object.assign({}, state, { colorsData: colorsData(state.colorsData, action) })
-			case 'FETCH_TOGGLE_VALUE':
-				return Object.assign({}, state, { settingsData: settingsData(state.settingsData, action) })
-			case 'TOGGLE_BTN':
-				return Object.assign({}, state, { settingsData: settingsData(state.settingsData, action) })
-			default:
-				return state
-	}
-}
-*/
-
-/*
-export default function colorsApp(state = initialState, action) {
-	switch (action.type) {
-			case 'TOGGLE_COLOR':
-					return Object.assign({}, state, {
-						colors: state.colors.map((color, index) => {
-							if (index === action.index) {
-								return Object.assign({}, color, {
-									isSaved: !color.isSaved
-								})
-							}
-							return color
-						})
-					})
-			case 'SELECT_COLOR':
-				return Object.assign({}, state, { selectedColorIndex: action.index })
-			case 'REMOVE_SAVED_COLOR':
-					return Object.assign({}, state, {
-						colors: state.colors.map((color) => {
-							if (color.hexColor == action.hexColor) {
-								return Object.assign({}, color, {
-									isSaved: false
-								})
-							}
-							return color
-						})
-					})
-			case 'TOGGLE_BTN':
-					//return Object.assign({}, state, { settingsToggleValue: !state.settingsToggleValue })
-					return Object.assign({}, state, { settingsToggleValue: settingsData(state.settingsToggleValue, action) })
-			default:
-					return state
-	}
-}
-*/
-
-/*
-export default combineReducers({
-	homeSection, 
-	savedSection
-});
-*/
