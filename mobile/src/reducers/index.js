@@ -2,6 +2,7 @@
 //import homeSection from "../features/home/reducers"
 //import savedSection from "../features/saved/reducers"
 
+/*
 const initialState = {
 	colors: [
 		{ hexColor: '#4286f4', isSaved: false },
@@ -16,16 +17,158 @@ const initialState = {
 	selectedColorIndex: null,
 	//settingsToggleValue: false
 }
+*/
 
-function settingsData(state = false, action) {
+/* Planned State Tree
+
+{
+	homeData: {
+		fetchedColors: [ { hexColor: #4286f4 }, ... ],
+		selectedColorIndex: null,
+	},
+	savedData: {
+		savedColors: [ { hexColor: #4286f4 }, ... ]
+	},
+	settingsData: {
+		toggleValue: false
+	}
+}
+
+
+*/
+
+const initialColors = [
+	{ hexColor: '#4286f4', isSaved: false },
+		{ hexColor: '#41f465', isSaved: false },
+		{ hexColor: '#f1f441', isSaved: false },
+		{ hexColor: '#f4bb41', isSaved: false },
+		{ hexColor: '#f44641', isSaved: false },
+		{ hexColor: '#4161f4', isSaved: false },
+		{ hexColor: '#7c41f4', isSaved: false },
+		{ hexColor: '#f441a6', isSaved: false }
+];
+
+function settingsData(state = { toggleValue: false }, action) {
 	switch (action.type) {
+		case 'FETCH_TOGGLE_VALUE':
+			return state
 		case 'TOGGLE_BTN':
-			return Object.assign({}, state, { settingsToggleValue: !state.settingsToggleValue })
+			//return !state
+			return Object.assign({}, state, { toggleValue: !state.toggleValue })
 		default:
 			return state
 	}
 }
 
+function fetchedColors(state = initialColors, action) {
+	switch(action.type) {
+		case 'TOGGLE_COLOR':
+				return state.colors.map((color, index) => {
+						if (index === action.index) {
+							return Object.assign({}, color, {
+								isSaved: !color.isSaved
+							})
+						}
+						return color
+				})
+		default:
+				state
+	}
+}
+
+function selectedColor(state = null, action) {
+	switch(action.type) {
+		case 'SELECT_COLOR':
+			return action.index
+		default:
+			state
+	}
+}
+
+function homeData(state = { colors: initialColors, selectedColorIndex: null }, action) {
+	switch (action.type) {
+		case 'TOGGLE_COLOR':
+			return Object.assign({}, state, { colors: fetchedColors(state.colors, action) })
+		case 'SELECT_COLOR':
+			return Object.assign({}, state, { selectedColorIndex: selectedColor(state.selectedColorIndex, action) })
+		default:
+			return state
+	}
+}
+
+function savedData(state = [], action) {
+
+}
+
+function colorsData(state = { colors: initialColors, selectedColorIndex: null }, action) {
+	console.log('colorsData - state - ', state);
+	switch (action.type) {
+		case 'FETCH_COLORS':
+				return state
+		case 'TOGGLE_COLOR':
+				return Object.assign({}, state, {
+					colors: state.colors.map((color, index) => {
+						if (index === action.index) {
+							return Object.assign({}, color, {
+								isSaved: !color.isSaved
+							})
+						}
+						return color
+					})
+				})
+		case 'SELECT_COLOR':
+			return Object.assign({}, state, { selectedColorIndex: action.index })
+		case 'RESET_COLOR_SELECTION':
+			return Object.assign({}, state, { selectedColorIndex: null })
+		case 'REMOVE_SAVED_COLOR':
+			return Object.assign({}, state, {
+				colors: state.colors.map((color) => {
+					if (color.hexColor == action.hexColor) {
+						return Object.assign({}, color, {
+							isSaved: false
+						})
+					}
+					return color
+				})
+			})
+		default: 
+			return state
+	}
+}
+
+/*
+export default function colorsApp(state = {}, action) {
+	return {
+		colorsData: colorsData(state.colorsData, action),
+		settingsData: settingsData(state.)
+	}
+}
+*/
+
+
+export default function colorsApp(state = {}, action) {
+	console.log('colorsApp');
+	switch (action.type) {
+			case 'FETCH_COLORS':
+				return Object.assign({}, state, { colorsData: colorsData(state.colorsData, action) })
+			case 'TOGGLE_COLOR':
+				return Object.assign({}, state, { colorsData: colorsData(state.colorsData, action) })
+			case 'SELECT_COLOR':
+				return Object.assign({}, state, { colorsData: colorsData(state.colorsData, action) })
+			case 'RESET_COLOR_SELECTION':
+				return Object.assign({}, state, { colorsData: colorsData(state.colorsData, action) })
+			case 'REMOVE_SAVED_COLOR':
+				return Object.assign({}, state, { colorsData: colorsData(state.colorsData, action) })
+			case 'FETCH_TOGGLE_VALUE':
+				return Object.assign({}, state, { settingsData: settingsData(state.settingsData, action) })
+			case 'TOGGLE_BTN':
+				return Object.assign({}, state, { settingsData: settingsData(state.settingsData, action) })
+			default:
+				return state
+	}
+}
+
+/*
 export default function colorsApp(state = initialState, action) {
 	switch (action.type) {
 			case 'TOGGLE_COLOR':
@@ -59,6 +202,7 @@ export default function colorsApp(state = initialState, action) {
 					return state
 	}
 }
+*/
 
 /*
 export default combineReducers({

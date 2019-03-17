@@ -1,3 +1,7 @@
+export const fetchColors = () => ({
+    type: 'FETCH_COLORS'
+})
+
 export const toggleColor = index => ({
     type: 'TOGGLE_COLOR',
     index
@@ -6,6 +10,10 @@ export const toggleColor = index => ({
 export const selectColor = index => ({
     type: 'SELECT_COLOR',
     index
+})
+
+export const resetColorSelection = () => ({
+    type: 'RESET_COLOR_SELECTION'
 })
 
 // Thunk Action Creators
