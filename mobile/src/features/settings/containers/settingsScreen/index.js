@@ -10,16 +10,14 @@ class SettingsScreen extends Component {
     });
 
     componentDidMount = () => {
-        this.props.dispatch(fetchToggleValue());
+        //this.props.dispatch(fetchToggleValue()); // think I'll need this for the database or online functionlity
     }
 
     render() {
+        
         return (
             <View style={ styles.container }>
-                { this.props.settingsData ? 
-                    <Button onPress={() => this.props.toggleBtn()} title={ this.props.settingsData.toggleValue ? 'ON' : 'OFF' }/> : 
-                    null 
-                }
+                <Button onPress={() => this.props.toggleBtn()} title={ this.props.toggleValue ? 'ON' : 'OFF' }/>
             </View>
         );
     }
@@ -34,9 +32,10 @@ const styles = StyleSheet.create({
     }
 });
 
+
 const mapStateToProps = state => ({
-    settingsData: state.settingsData
-});
+    toggleValue: state.settingsData.toggleValue
+})
 
 const mapDispatchToProps = dispatch => ({
     toggleBtn: () => dispatch(toggleBtn()),

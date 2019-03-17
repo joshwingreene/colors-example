@@ -14,25 +14,17 @@ class HomeScreen extends Component { // HomeScreen's container components will b
 
     componentDidMount = () => {
         console.log('componentDidMount');
-        this.props.dispatch(fetchColors());
+        //this.props.dispatch(fetchColors()); // will need when fetching the colors from the API
     }
 
     render() {
         console.log('render');
 		return ( // NavigationService wasn't needed here.  
 			<View style={{ flex: 1 }}>
-                { this.props.colorsData ? <ColorGridContainer pushToScreen={ () => this.props.navigation.navigate('Detail') } /> : null }
+                <ColorGridContainer pushToScreen={ () => this.props.navigation.navigate('Detail') } />
 			</View>
 		)
 	}
 }
 
-const mapStateToProps = state => {
-    console.log('HomeScreen - mapStateToProps - state - ', state); // state is an empty object at first. Because of this, I check for colorsData before rendering the ColorGridContainer
-  
-    return { // Describes how to transform the current Redux store state into the props you want to pass to a presentational component you are wrapping
-        colorsData: state.colorsData,
-  }
-}
-
-export default connect(mapStateToProps, null)(HomeScreen);
+export default connect()(HomeScreen);
