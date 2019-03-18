@@ -14,7 +14,7 @@ class HomeScreen extends Component { // HomeScreen's container components will b
 
     componentDidMount = () => {
         console.log('componentDidMount');
-        //this.props.dispatch(fetchColors()); // will need when fetching the colors from the API
+        this.props.dispatch(fetchColors());
     }
 
     render() {

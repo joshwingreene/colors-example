@@ -107,7 +107,7 @@ const getChosenColor = (colors, selectedColorIndex) => {
 }
 
 const mapStateToProps = (state) => ({ // Describes how to transform the current Redux store state into the props you want to pass to a presentational component you are wrapping
-    color: getChosenColor(state.homeData.fetchedColors, state.homeData.selectedColorIndex),
+    color: getChosenColor(state.homeData.fetchedColorData.fetchedColors, state.homeData.selectedColorIndex),
     selectedColorIndex: state.homeData.selectedColorIndex,
     savedColors: state.savedData.savedColors
 })
