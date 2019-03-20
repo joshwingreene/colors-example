@@ -1,13 +1,25 @@
-export default function savedData(state = { savedColors: [] }, action) {
+export default function savedData(state = { savedColors: [], isFetchingUserColors: false, isPostingColor: false, isDeletingColor: false }, action) {
 	switch (action.type) {
+		case 'POST_SAVED_COLOR':
+			return Object.assign({}, state, { isPostingColor: true })
+		case 'RECORD_SAVED_COLOR':
+			return Object.assign({}, state, { savedColors: [ ...state.savedColors, { id: action.id, hexColor: action.hexColor } ], isPostingColor: false })
+		/*
 		case 'SAVE_COLOR':
 				return Object.assign({}, state, { savedColors: [ ...state.savedColors, { hexColor: action.hexColor } ] })
-		case 'REMOVE_SAVED_COLOR':
+		*/
+		case 'REQUEST_USER_COLORS':
+			return Object.assign({}, state, { isFetchingUserColors: true })
+		case 'RECEIVE_USER_COLORS':
+			return Object.assign({}, state, { savedColors: action.colors, isFetchingUserColors: false })
+		case 'DELETE_SAVED_COLOR':
+			return Object.assign({}, state, { isDeletingColor: true })
+		case 'RECORD_SAVED_COLOR_REMOVAL':
 				// get the index of the color that will be removed
 				let indexOfColor = null;
 
 				for (let i = 0; i < state.savedColors.length; i++) {
-					if (state.savedColors[i].hexColor == action.hexColor) {
+					if (state.savedColors[i].id == action.id) {
 						indexOfColor = i;
 					}
 				}
@@ -17,7 +29,7 @@ export default function savedData(state = { savedColors: [] }, action) {
 
 				copiedArray.splice(indexOfColor, 1);
 
-				return Object.assign({}, state, { savedColors: copiedArray })
+				return Object.assign({}, state, { savedColors: copiedArray, isDeletingColor: false })
 		default:
 			return state
 	}

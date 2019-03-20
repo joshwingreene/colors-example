@@ -22,7 +22,7 @@ class DetailScreen extends Component { // DetailScreen's container components wi
                     <Button
                         onPress={() => {
                                 if (params.isColorSaved) {
-                                    params.removeColor(params.selectedColor.hexColor);
+                                    params.removeColor(params.getIdOfSavedColor(params.selectedColor.hexColor));
                                 } else {
                                     params.saveColor(params.selectedColor.hexColor);
                                 }  
@@ -41,8 +41,9 @@ class DetailScreen extends Component { // DetailScreen's container components wi
         this.props.navigation.setParams({ 
             selectedColor: this.props.color, 
             saveColor: (hexColor) => this.props.dispatch(saveColor(hexColor)),
-            removeColor: (hexColor) => this.props.dispatch(removeColor(hexColor)),
-            isColorSaved: this.checkIfColorIsSaved()
+            removeColor: (id) => this.props.dispatch(removeColor(id)),
+            isColorSaved: this.checkIfColorIsSaved(),
+            getIdOfSavedColor: this.getIdOfSavedColor
         });
     }
 
@@ -67,6 +68,17 @@ class DetailScreen extends Component { // DetailScreen's container components wi
         }
 
         return isSaved;
+    }
+
+    getIdOfSavedColor = (hexColor) => {
+        let id = null;
+
+        for (let i = 0; i < this.props.savedColors.length; i++ ) {
+            if (hexColor == this.props.savedColors[i].hexColor) {
+                id = this.props.savedColors[i].id;
+            }
+        }
+        return id;
     }
 
     render() {

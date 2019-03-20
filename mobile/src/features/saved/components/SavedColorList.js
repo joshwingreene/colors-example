@@ -11,7 +11,7 @@ export default class SavedColorList extends Component {
 
 	renderItem = ({ item }) => {
         console.log('item: ', item);
-        return <SavedColorItem {...item} onPress={() => this.props.removeColor(item.hexColor)}></SavedColorItem>
+        return <SavedColorItem {...item} onPress={() => this.props.removeColor(item.id)}></SavedColorItem>
     }
 
     renderSeparator = () => {

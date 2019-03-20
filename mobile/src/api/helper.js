@@ -1,18 +1,18 @@
 import { base_api_url } from './constants';
 
 export const buildRequest = ({ mainEndpoint = '', params = {}, body = null, method='GET' }) => {
-	let finalUrl = base_api_url + mainEndpoint + '?view=Grid%20view'; // ?view=Grid%20view - was suggested by the AirTable API
+    let finalUrl = base_api_url + mainEndpoint;
+    
+    if (method == 'GET') {
+        finalUrl = finalUrl + '?view=Grid%20view'; // ?view=Grid%20view - was suggested by the AirTable API
+    }
+    else if (method == 'DELETE' || method == 'UPDATE') {
+        finalUrl = finalUrl + '/' + params.id;
+    }
+    // POST just needs the mainEndpoint at the end of the url
     
     console.log('finalURL: ', finalUrl);
-    
-    if (params != {}) {
-		let prms = [];
-		for (let val in params) {
-			let encodedParam = encodeURIComponent(val) + '=' + encodeURIComponent(params[val]);
-			prms.push(encodedParam);
-		}
-		finalUrl = prms.length == 0 ? finalUrl : finalUrl + '?' + prms.join('&');
-	}
+
 	let request = body != null ? 
 	{
 		method: method,
@@ -27,7 +27,6 @@ export const buildRequest = ({ mainEndpoint = '', params = {}, body = null, meth
 			'Authorization': 'Bearer key65euQPFbxTNyqz', // depends on how tokens are being handled
 		}
 	};
-	console.log('finalUrl:', finalUrl);
 	console.log('request object:', request);
 	
 	return fetch(finalUrl, request).then((response) => {
