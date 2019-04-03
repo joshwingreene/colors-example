@@ -1,6 +1,7 @@
 import { base_api_url } from './constants';
+import { recordConnectionStatus } from '../utility/actions';
 
-export const buildRequest = ({ mainEndpoint = '', params = {}, body = null, method='GET' }) => {
+export const buildRequest = ({ mainEndpoint = '', params = {}, body = null, method='GET'/*, dispatch*/ }) => {
     let finalUrl = base_api_url + mainEndpoint;
     
     if (method == 'GET') {
@@ -30,10 +31,17 @@ export const buildRequest = ({ mainEndpoint = '', params = {}, body = null, meth
 	console.log('request object:', request);
 	
 	return fetch(finalUrl, request).then((response) => {
-		console.log('Response:', response);
+        console.log('Response:', response);
 		if(!response.ok) {
 			throw response; // Deal with these responses on the associated screen
-		}
+        }
 		return response.json();
-    });
+    });/*.catch((error) => {
+        console.log('Error: ', error);
+        if (error.message == 'Network request failed') {
+            console.log('network request failed');
+            dispatch(recordConnectionStatus(false));
+        }
+        //throw error;
+    })*/
 }

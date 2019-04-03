@@ -38,12 +38,13 @@ class DetailScreen extends Component { // DetailScreen's container components wi
     componentDidMount = () => {
         console.log('DetailScreen - componentDidMount');
 
-        this.props.navigation.setParams({ 
+        this.props.navigation.setParams({ // TODO: Try to refactor this and the code in the header so I don't need to use this.updateColorParams in the render method
             selectedColor: this.props.color, 
-            saveColor: (hexColor) => this.props.dispatch(saveColor(hexColor)),
+            saveColor: (hexColor) => this.props.dispatch(saveColor(hexColor, this.props.isDeviceOnline)),
             removeColor: (id) => this.props.dispatch(removeColor(id)),
             isColorSaved: this.checkIfColorIsSaved(),
-            getIdOfSavedColor: this.getIdOfSavedColor
+            getIdOfSavedColor: this.getIdOfSavedColor,
+            //isDeviceOnline: this.props.isDeviceOnline
         });
     }
 
@@ -88,6 +89,8 @@ class DetailScreen extends Component { // DetailScreen's container components wi
 
         console.log('detailScreen - params - ', this.props.navigation.state.params); // undefined at first (defined once setParams is called by componentDidMount)
 
+        console.log('DetailScren - isDeviceOnline -', this.props.isDeviceOnline);
+
         if (this.props.navigation.state.params && this.props.navigation.state.params.isColorSaved != this.checkIfColorIsSaved() ) {
             console.log('navigationOptions\'s isColorSaved and result of checkIfColorIsSaved aren\'t the same');
             this.updateColorSavedParam();
@@ -121,7 +124,8 @@ const getChosenColor = (colors, selectedColorIndex) => {
 const mapStateToProps = (state) => ({ // Describes how to transform the current Redux store state into the props you want to pass to a presentational component you are wrapping
     color: getChosenColor(state.homeData.fetchedColorData.fetchedColors, state.homeData.selectedColorIndex),
     selectedColorIndex: state.homeData.selectedColorIndex,
-    savedColors: state.savedData.savedColors
+    savedColors: state.savedData.savedColors,
+    isDeviceOnline: state.connectionData.isDeviceOnline
 })
 
 export default connect(mapStateToProps, null)(DetailScreen);

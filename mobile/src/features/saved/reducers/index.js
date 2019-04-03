@@ -4,10 +4,22 @@ export default function savedData(state = { savedColors: [], isFetchingUserColor
 			return Object.assign({}, state, { isPostingColor: true })
 		case 'RECORD_SAVED_COLOR':
 			return Object.assign({}, state, { savedColors: [ ...state.savedColors, { id: action.id, hexColor: action.hexColor } ], isPostingColor: false })
-		/*
-		case 'SAVE_COLOR':
-				return Object.assign({}, state, { savedColors: [ ...state.savedColors, { hexColor: action.hexColor } ] })
-		*/
+		// testing
+		case 'OFFLINE_SAVE_COLOR':
+			return Object.assign({}, state, { savedColors: [ ...state.savedColors, { id: action.hexColor, hexColor: action.hexColor } ] })
+		case 'UPDATE_SAVED_COLOR_ID':
+			return Object.assign({}, state, {
+				savedColors: state.savedColors.map((color) => {
+					if (color.hexColor === action.hexColor) {
+						return Object.assign({}, color, {
+							id: action.id
+						})
+					}
+					return color
+				}),
+				isPostingColor: false
+			})
+		// ------
 		case 'REQUEST_USER_COLORS':
 			return Object.assign({}, state, { isFetchingUserColors: true })
 		case 'RECEIVE_USER_COLORS':

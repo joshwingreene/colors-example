@@ -1,4 +1,5 @@
 import { buildRequest } from '../../../api/helper';
+import { saveAction } from '../../../utility/actions';
 
 export const requestColors = () => ({
     type: 'REQUEST_COLORS'
@@ -59,6 +60,22 @@ export const recordSavedColor = (json) => {
     }
 }
 
+export const updateSavedColorIDInState = (json) => {
+
+    return {
+        type: 'UPDATE_SAVED_COLOR_ID',
+        id: json.id,
+        hexColor: json.fields.hexColor
+    }
+}
+
+export const offlineSaveColorToState = (hexColor) => {
+    return {
+        type: 'OFFLINE_SAVE_COLOR',
+        hexColor
+    }
+}
+
 // Thunk Action Creators
 
 export const fetchColors = () => {
@@ -70,8 +87,15 @@ export const fetchColors = () => {
         return buildRequest({ mainEndpoint: 'HomeColors', method: 'GET' })
             .then(json => {
                     dispatch(receiveColors(json)) // we can dispatch many times here based on the documentation 
+                })/*
+            .catch(error => {
+                console.log('Catched Response: ', error);
+
+                if (error.message == 'Network request failed') {
+                    console.log('network request failed');
                 }
-            )
+            })
+            */
     }
 }
 
@@ -91,6 +115,7 @@ export const fetchUserColors = () => {
     }
 }
   
+/*
 export const saveColor = (hexColor) => {
 
     return function(dispatch) {
@@ -104,6 +129,66 @@ export const saveColor = (hexColor) => {
                     dispatch(recordSavedColor(json));
                 }
             )
+    }
+}
+*/
+
+export const saveColorToBackendAndState = (hexColor) => {
+    
+    return function(dispatch) {
+
+        dispatch(postSavedColor());
+
+        return buildRequest({ mainEndpoint: 'UserColors', method: 'POST', body: { fields: { hexColor } }})
+            .then(json => {
+                    dispatch(recordSavedColor(json));
+                }
+            )
+    }
+}
+
+export const saveColorToBackendAndUpdateState = (hexColor) => {
+
+    return function(dispatch) {
+
+        dispatch(postSavedColor());
+
+        return buildRequest({ mainEndpoint: 'UserColors', method: 'POST', body: { fields: { hexColor } }})
+            .then(json => {
+                    dispatch(updateSavedColorIDInState(json));
+                }
+            )
+    }
+}
+
+export const saveColor = (hexColor, isDeviceOnline) => { // TODO: Add a paramater for the database thunk action creator that will be used and passed in by the screen
+    console.log('saveColor - isDeviceOnline -', isDeviceOnline);
+    return function(dispatch) {
+
+        /*
+
+        possible approach // TODO: Do some research to see what other people are doing
+
+        if online access
+        - record the color after the request, like before
+
+        if offline (thinking of it going offline after the colors are fetched and added to the state)
+        - save the color using the hex color
+        - save the action for saving to online (I can also save the name to the database, which is something that can be added to saveAction)
+        - when online again, fire off this action (reducer should make sure there are no duplicate colors saved) and all other saved actions that relate to the backend 
+
+        */
+
+        // if online
+        if (isDeviceOnline) {
+            dispatch(saveColorToBackendAndState(hexColor));
+        } else {
+            // if offline
+            dispatch(offlineSaveColorToState(hexColor));
+            dispatch(saveAction(saveColorToBackendAndUpdateState, [ hexColor ])); // TODO: Create a new method that updates the state with the id from the backend (ex. saveColorToBackendAndUpdateLocalRecord)
+        }
+    
+        // TODO: Save to the Database
     }
 }
 

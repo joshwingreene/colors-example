@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { connect } from 'react-redux'
 import ColorGridContainer from '../ColorGridContainer';
 import { fetchColors, fetchUserColors } from '../../actions';
@@ -14,8 +14,19 @@ class HomeScreen extends Component { // HomeScreen's container components will b
 
     componentDidMount = () => {
         console.log('componentDidMount');
-        this.props.dispatch(fetchColors());
-        this.props.dispatch(fetchUserColors());
+        this.apiCallsIfOnline();
+    }
+
+    componentDidUpdate = () => {
+        console.log('componentDidUpdate');
+        this.apiCallsIfOnline();
+    }
+
+    apiCallsIfOnline = () => {
+        if (this.props.isDeviceOnline && (this.props.savedActions.length == 0) && (this.props.isPostingColor == false)) { 
+            this.props.dispatch(fetchColors());
+            this.props.dispatch(fetchUserColors());
+        }
     }
 
     render() {
@@ -28,4 +39,10 @@ class HomeScreen extends Component { // HomeScreen's container components will b
 	}
 }
 
-export default connect()(HomeScreen);
+const mapStateToProps = state => ({
+    isDeviceOnline: state.connectionData.isDeviceOnline,
+    savedActions: state.savedActionsData.savedActions,
+    isPostingColor: state.savedData.isPostingColor
+})
+
+export default connect(mapStateToProps, null)(HomeScreen);
