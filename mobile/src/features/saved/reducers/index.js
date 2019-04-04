@@ -1,4 +1,10 @@
-export default function savedData(state = { savedColors: [], isFetchingUserColors: false, isPostingColor: false, isDeletingColor: false }, action) {
+export default function savedData(state = { 
+									savedColors: [], 
+									isFetchingUserColors: false, 
+									isPostingColor: false, 
+									isDeletingColor: false, 
+									isPersistingUserColors: false 
+								}, action) {
 	switch (action.type) {
 		case 'POST_SAVED_COLOR':
 			return Object.assign({}, state, { isPostingColor: true })
@@ -19,6 +25,12 @@ export default function savedData(state = { savedColors: [], isFetchingUserColor
 				}),
 				isPostingColor: false
 			})
+		// ------
+		// realm related
+		case 'SAVING_USER_COLORS_TO_REALM':
+			return Object.assign({}, state, { isPersistingUserColors: true })
+		case 'FINISHED_PERSISTING_USER_COLORS':
+			return Object.assign({}, state, { isPersistingUserColors: false })
 		// ------
 		case 'REQUEST_USER_COLORS':
 			return Object.assign({}, state, { isFetchingUserColors: true })

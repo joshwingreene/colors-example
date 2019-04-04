@@ -1,5 +1,7 @@
 import { buildRequest } from '../../../api/helper';
 import { saveAction } from '../../../utility/actions';
+import realm from '../../../db/helper';
+import { persistUserColors, deleteUserColors } from '../../../db/save';
 
 export const requestColors = () => ({
     type: 'REQUEST_COLORS'
@@ -42,11 +44,11 @@ export const receiveColors = (json) => {
     }
 }
 
-export const receiveUserColors = (json) => {
+export const receiveUserColors = (colorList) => {
   
     return {
         type: 'RECEIVE_USER_COLORS',
-        colors: createColorList(json)
+        colors: colorList
     }
 
 }
@@ -73,6 +75,18 @@ export const offlineSaveColorToState = (hexColor) => {
     return {
         type: 'OFFLINE_SAVE_COLOR',
         hexColor
+    }
+}
+
+export const realmPersistingUserColors = () => {
+    return {
+        type: 'SAVING_USER_COLORS_TO_REALM'
+    }
+}
+
+export const finishedPersistingUserColors = () => {
+    return {
+        type: 'FINISHED_PERSISTING_USER_COLORS'
     }
 }
 
@@ -107,13 +121,30 @@ export const fetchUserColors = () => {
 
         return buildRequest({ mainEndpoint: 'UserColors', method: 'GET' })
             .then(json => {
-                dispatch(receiveUserColors(json));
-
-                // TODO: I think I could dispatch a thunk action creator that saves the saved colors to the DB. I can do the same thing
-                //   in saveColor
+                let colorList = createColorList(json);
+                dispatch(receiveUserColors(colorList));
+                dispatch(realmSaveUserColors(colorList));
+                //deleteUserColors({}, realm); // using to wipe the saved colors when needed
             })
     }
 }
+
+export const realmSaveUserColors = (colorList) => {
+
+    return function(dispatch) {
+
+        dispatch(realmPersistingUserColors());
+
+        return persistUserColors({ colorList }, realm)
+            .then(() => {
+                dispatch(finishedPersistingUserColors());
+            })
+            .catch((error) => {
+                console.log('Realm Error: ', error);
+            })
+    }
+}
+
   
 /*
 export const saveColor = (hexColor) => {
