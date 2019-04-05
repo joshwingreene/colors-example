@@ -16,6 +16,7 @@ import thunkMiddleware from 'redux-thunk';
 import { createLogger } from 'redux-logger';
 import rootReducer from './reducers';
 
+import { fetchColors, fetchUserColors } from './features/home/actions';
 import { checkConnectionStatus, recordConnectionStatus, executeSavedActions } from './utility/actions';
 import { NetInfo } from 'react-native';
 
@@ -45,6 +46,11 @@ const handleConnectivityChange = (isConnected) => { // Note: Not consistent when
   store.dispatch(recordConnectionStatus(isConnected));
 
   //console.log('savedActionsData -', store.getState().savedActionsData);
+
+  if (isConnected) {
+    store.dispatch(fetchColors());
+    store.dispatch(fetchUserColors());
+  }
 
   let savedActions = store.getState().savedActionsData.savedActions;
 

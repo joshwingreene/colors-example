@@ -5,6 +5,8 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import { saveColor, resetColorSelection } from '../../actions';
 import { removeColor } from '../../../saved/actions';
+import { getUserColor } from '../../../../db/UserColors';
+import realm from '../../../../db/helper';
 
 class DetailScreen extends Component { // DetailScreen's container components will be invoked here
     
@@ -14,7 +16,7 @@ class DetailScreen extends Component { // DetailScreen's container components wi
 
         console.log('navigationOptions - params: ', params);
 
-        if (params.selectedColor && params.saveColor && params.removeColor && params.isColorSaved != null) {
+        if (params.saveColor && params.removeColor && params.isColorSaved != null) {
 
             return {
                 title: 'Color',
@@ -22,9 +24,9 @@ class DetailScreen extends Component { // DetailScreen's container components wi
                     <Button
                         onPress={() => {
                                 if (params.isColorSaved) {
-                                    params.removeColor(params.getIdOfSavedColor(params.selectedColor.hexColor));
+                                    params.removeColor();
                                 } else {
-                                    params.saveColor(params.selectedColor.hexColor);
+                                    params.saveColor();
                                 }  
                             }
                         }
@@ -38,14 +40,20 @@ class DetailScreen extends Component { // DetailScreen's container components wi
     componentDidMount = () => {
         console.log('DetailScreen - componentDidMount');
 
-        this.props.navigation.setParams({ // TODO: Try to refactor this and the code in the header so I don't need to use this.updateColorParams in the render method
-            selectedColor: this.props.color, 
-            saveColor: (hexColor) => this.props.dispatch(saveColor(hexColor, this.props.isDeviceOnline)),
-            removeColor: (id) => this.props.dispatch(removeColor(id)),
-            isColorSaved: this.checkIfColorIsSaved(),
-            getIdOfSavedColor: this.getIdOfSavedColor,
+        this.props.navigation.setParams({
+            saveColor: this.handleSaveColor,
+            removeColor: this.handleRemoveColor,
             //isDeviceOnline: this.props.isDeviceOnline
         });
+
+        this.handleSetSavedStatusInHeader();
+    }
+
+    componentDidUpdate = (prevProps) => {
+        console.log('DetailScreen - componentDidUpdate');
+        if (this.props.numOfSavedColors != prevProps.numOfSavedColors) {
+			this.handleSetSavedStatusInHeader();
+		}
     }
 
     componentWillUnmount = () => {
@@ -53,33 +61,32 @@ class DetailScreen extends Component { // DetailScreen's container components wi
         this.props.dispatch(resetColorSelection());
     }
 
-    updateColorSavedParam = () => { // Like with updateColorParams from before, this is the only way in which I was able to update the color param after the app state was changed after Save/Saved toggle is pressed. (while following the design anyways)
-        this.props.navigation.setParams( { isColorSaved: this.checkIfColorIsSaved() });
+    handleSetSavedStatusInHeader = () => {
+        getUserColor({ hexColor: this.props.color.hexColor }, realm)
+                .then((item) => {
+                    console.log('getUserColor - item -', item);
+                    //console.log('getUserColor - item length -', item.length);
+                    if (item.data) {
+                        this.props.navigation.setParams({ isColorSaved: true });
+                    } else {
+                        this.props.navigation.setParams({ isColorSaved: false });
+                    }
+            });
     }
 
-    checkIfColorIsSaved = () => {
-        let isSaved = false;
-    
-        console.log('checkIfColorIsSaved - savedColors - ', this.props.savedColors);
-
-        for (let i = 0; i < this.props.savedColors.length; i++) {
-            if (this.props.savedColors[i].hexColor == this.props.color.hexColor ) {
-                isSaved = true;
-            }
-        }
-
-        return isSaved;
+    handleSaveColor = () => {
+        this.props.dispatch(saveColor(this.props.color.hexColor, this.props.isDeviceOnline));
     }
 
-    getIdOfSavedColor = (hexColor) => {
-        let id = null;
-
-        for (let i = 0; i < this.props.savedColors.length; i++ ) {
-            if (hexColor == this.props.savedColors[i].hexColor) {
-                id = this.props.savedColors[i].id;
-            }
-        }
-        return id;
+    handleRemoveColor = () => {
+        getUserColor({ hexColor: this.props.color.hexColor }, realm)
+                .then((result) => {
+                    console.log('handleRemoveColor - getUserColor - item -', result);
+                    //console.log('getUserColor - item length -', item.length);
+                    if (result.data) {
+                        this.props.dispatch(removeColor(result.data.id, result.data.hexColor, this.props.isDeviceOnline));
+                    }
+            });
     }
 
     render() {
@@ -90,11 +97,6 @@ class DetailScreen extends Component { // DetailScreen's container components wi
         console.log('detailScreen - params - ', this.props.navigation.state.params); // undefined at first (defined once setParams is called by componentDidMount)
 
         console.log('DetailScren - isDeviceOnline -', this.props.isDeviceOnline);
-
-        if (this.props.navigation.state.params && this.props.navigation.state.params.isColorSaved != this.checkIfColorIsSaved() ) {
-            console.log('navigationOptions\'s isColorSaved and result of checkIfColorIsSaved aren\'t the same');
-            this.updateColorSavedParam();
-        }
 
 		return (
 			<View style={ styles.container }>
@@ -117,15 +119,15 @@ const styles = StyleSheet.create({
     }
 });
 
-const getChosenColor = (colors, selectedColorIndex) => {
-    return colors.filter((color, index) => index == selectedColorIndex)[0];
+const getChosenColor = (fetchedColors, selectedColorIndex) => {
+    return fetchedColors[selectedColorIndex];
 }
 
 const mapStateToProps = (state) => ({ // Describes how to transform the current Redux store state into the props you want to pass to a presentational component you are wrapping
     color: getChosenColor(state.homeData.fetchedColorData.fetchedColors, state.homeData.selectedColorIndex),
     selectedColorIndex: state.homeData.selectedColorIndex,
-    savedColors: state.savedData.savedColors,
-    isDeviceOnline: state.connectionData.isDeviceOnline
+    isDeviceOnline: state.connectionData.isDeviceOnline,
+    numOfSavedColors: state.savedData.numOfSavedColors
 })
 
 export default connect(mapStateToProps, null)(DetailScreen);

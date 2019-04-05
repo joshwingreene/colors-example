@@ -14,20 +14,22 @@ class HomeScreen extends Component { // HomeScreen's container components will b
 
     componentDidMount = () => {
         console.log('componentDidMount');
-        this.apiCallsIfOnline();
+        //this.apiCallsIfOnline();
     }
 
     componentDidUpdate = () => {
         console.log('componentDidUpdate');
-        this.apiCallsIfOnline();
+        //this.apiCallsIfOnline();
     }
 
+    /*
     apiCallsIfOnline = () => {
         if (this.props.isDeviceOnline && (this.props.savedActions.length == 0) && (this.props.isPostingColor == false)) { 
             this.props.dispatch(fetchColors());
             this.props.dispatch(fetchUserColors());
         }
     }
+    */
 
     render() {
         console.log('render');
@@ -40,9 +42,9 @@ class HomeScreen extends Component { // HomeScreen's container components will b
 }
 
 const mapStateToProps = state => ({
-    isDeviceOnline: state.connectionData.isDeviceOnline,
-    savedActions: state.savedActionsData.savedActions,
-    isPostingColor: state.savedData.isPostingColor
+    //isDeviceOnline: state.connectionData.isDeviceOnline,
+    //savedActions: state.savedActionsData.savedActions,
+    //isPostingColor: state.savedData.isPostingColor
 })
 
 export default connect(mapStateToProps, null)(HomeScreen);
