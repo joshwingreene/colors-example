@@ -10,7 +10,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({ // Receives the dispatch() method and returns callback props that you want to inject into the presentational component
-  removeColor: (id, hexColor, isDeviceOnline, endCallBack) => dispatch(removeColor(id, hexColor, isDeviceOnline, endCallBack))
+  removeColor: (id, hexColor, isDeviceOnline) => dispatch(removeColor(id, hexColor, isDeviceOnline))
 })
 
 const SavedColorListContainer = connect( // pass the mapStateToProps and mapDispatchToProps functions as arguments and wrap the presentational component
