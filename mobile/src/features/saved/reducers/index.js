@@ -15,7 +15,7 @@ export default function savedData(state = {
 			return Object.assign({}, state, { isPostingColor: false })
 		// ------
 		// db related
-		case 'SAVING_USER_COLORS_TO_REALM': // TODO: Change to DB (remember: we want to share this code between web and mobile)
+		case 'SAVING_USER_COLORS_TO_DB':
 			return Object.assign({}, state, { isPersistingUserColors: true })
 		case 'FINISHED_PERSISTING_USER_COLORS':
 			return Object.assign({}, state, { isPersistingUserColors: false })

@@ -55,9 +55,9 @@ export const receiveUserColors = () => {
     }
 }
 
-export const realmPersistingUserColors = () => {
+export const dbPersistingUserColors = () => {
     return {
-        type: 'SAVING_USER_COLORS_TO_REALM'
+        type: 'SAVING_USER_COLORS_TO_DB'
     }
 }
 
@@ -125,17 +125,17 @@ export const fetchUserColors = () => {
             .then(json => {
                 let colorList = createColorList(json);
                 dispatch(receiveUserColors()); // now just used to say that the colors have been received and we have finished fetching them
-                dispatch(realmSaveUserColors(colorList));
+                dispatch(dbSaveUserColors(colorList));
                 //deleteUserColors({}, realm); // using to wipe the saved colors when needed
             })
     }
 }
 
-export const realmSaveUserColors = (colorList) => {
+export const dbSaveUserColors = (colorList) => {
 
     return function(dispatch) {
 
-        dispatch(realmPersistingUserColors());
+        dispatch(dbPersistingUserColors());
 
         return persistUserColors({ colorList }, realm)
             .then(() => {
@@ -143,7 +143,7 @@ export const realmSaveUserColors = (colorList) => {
                 dispatch(saveNumberOfSavedColors(colorList.length));
             })
             .catch((error) => {
-                console.log('Realm Error: ', error);
+                console.log('DB Error: ', error);
             })
     }
 }
