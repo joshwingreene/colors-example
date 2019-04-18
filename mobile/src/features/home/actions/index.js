@@ -162,19 +162,6 @@ export const saveColorToBackendAndState = (hexColor) => {
     }
 }
 
-export const netPostUserColor = (hexColor) => {
-
-    return function(dispatch) {
-
-        dispatch(postSavedColor());
-
-        return postUserColor(hexColor)
-            .then(json => {
-                dispatch(finishedPostingSavedColor());
-            })
-    }
-}
-
 export const dbPersistUserColor = (id, hexColor) => {
 
     return function(dispatch) {
@@ -188,22 +175,6 @@ export const dbPersistUserColor = (id, hexColor) => {
             })
     }
 }
-
-/*
-export const saveColorToDBAndBackend = (hexColor) => { // The id will be from the associated 
-
-    return function(dispatch) {
-
-        dispatch(dbSavingUserColor());
-
-        return persistUserColor( { hexColor }, realm)
-            .then(() => {
-                dispatch(dbFinishedSavingUserColor());
-                dispatch(netPostUserColor(hexColor));
-            })
-    }
-}
-*/
 
 export const onlineSaveColorToAPIAndDB = (hexColor) => {
 
