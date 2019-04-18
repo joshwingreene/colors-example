@@ -49,37 +49,9 @@ export const receiveColors = (json) => {
     }
 }
 
-export const receiveUserColors = (colorList) => {
-  
+export const receiveUserColors = () => {
     return {
-        type: 'RECEIVE_USER_COLORS',
-        colors: colorList
-    }
-
-}
-
-export const recordSavedColor = (json) => {
-
-    return {
-        type: 'RECORD_SAVED_COLOR',
-        id: json.id,
-        hexColor: json.fields.hexColor
-    }
-}
-
-export const updateSavedColorIDInState = (json) => {
-
-    return {
-        type: 'UPDATE_SAVED_COLOR_ID',
-        id: json.id,
-        hexColor: json.fields.hexColor
-    }
-}
-
-export const offlineSaveColorToState = (hexColor) => {
-    return {
-        type: 'OFFLINE_SAVE_COLOR',
-        hexColor
+        type: 'RECEIVE_USER_COLORS'
     }
 }
 
@@ -152,7 +124,7 @@ export const fetchUserColors = () => {
         return buildRequest({ mainEndpoint: 'UserColors', method: 'GET' })
             .then(json => {
                 let colorList = createColorList(json);
-                //dispatch(receiveUserColors(colorList));
+                dispatch(receiveUserColors()); // now just used to say that the colors have been received and we have finished fetching them
                 dispatch(realmSaveUserColors(colorList));
                 //deleteUserColors({}, realm); // using to wipe the saved colors when needed
             })
@@ -176,25 +148,6 @@ export const realmSaveUserColors = (colorList) => {
     }
 }
 
-  
-/*
-export const saveColor = (hexColor) => {
-
-    return function(dispatch) {
-
-        dispatch(postSavedColor()); // stating that an API call is starting
-
-        // note: I can dispatch multiple actions here (thinking of dispatching the action that updates the state here (or in the above dispatch) and then doing a dispatch for the thunk action creator for the database call after the api call
-
-        return buildRequest({ mainEndpoint: 'UserColors', method: 'POST', body: { fields: { hexColor } }})
-            .then(json => {
-                    dispatch(recordSavedColor(json));
-                }
-            )
-    }
-}
-*/
-
 export const saveColorToBackendAndState = (hexColor) => {
     
     return function(dispatch) {
@@ -204,20 +157,6 @@ export const saveColorToBackendAndState = (hexColor) => {
         return buildRequest({ mainEndpoint: 'UserColors', method: 'POST', body: { fields: { hexColor } }})
             .then(json => {
                     dispatch(recordSavedColor(json));
-                }
-            )
-    }
-}
-
-export const saveColorToBackendAndUpdateState = (hexColor) => {
-
-    return function(dispatch) {
-
-        dispatch(postSavedColor());
-
-        return buildRequest({ mainEndpoint: 'UserColors', method: 'POST', body: { fields: { hexColor } }})
-            .then(json => {
-                    dispatch(updateSavedColorIDInState(json));
                 }
             )
     }
@@ -305,8 +244,8 @@ export const saveColor = (hexColor, isDeviceOnline) => { // TODO: Add a paramate
             dispatch(onlineSaveColorToAPIAndDB(hexColor));
         } else {
             // if offline
-            dispatch(offlineSaveColorToState(hexColor));
-            dispatch(saveAction(saveColorToBackendAndUpdateState, [ hexColor ])); // TODO: Create a new method that updates the state with the id from the backend (ex. saveColorToBackendAndUpdateLocalRecord)
+            //dispatch(offlineSaveColorToState(hexColor)); // (as for how this and the following line were being used previously, refer to the git history) commenting out since I will have deleted the previous action / reducer case, but may need a similar method when redux-offline is being used
+            //dispatch(saveAction(saveColorToBackendAndUpdateState, [ hexColor ])); // TODO: Create a new method that updates the state with the id from the backend (ex. saveColorToBackendAndUpdateLocalRecord)
         }
     }
 }

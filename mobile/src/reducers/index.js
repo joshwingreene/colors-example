@@ -13,7 +13,13 @@ import savedActionsData from '../utility/reducers/savedActionsData';
 		selectedColorIndex: null,
 	},
 	savedData: {
-		savedColors: [ { hexColor: #4286f4 }, ... ]
+		isFetchingUserColors: false, 
+		isPostingColor: false, 
+		isDeletingColor: false, 
+		isPersistingUserColors: false,
+		isPersistingUserColor: false,
+		isDeletingPersistedColor: false,
+		numOfSavedColors: 0
 	},
 	settingsData: {
 		toggleValue: false

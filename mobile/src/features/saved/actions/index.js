@@ -19,11 +19,6 @@ export const dbFinishedDeletingColor = () => ({
     type: 'DB_FINISHED_DELETING_SAVED_COLOR'
 })
 
-export const recordColorDeletion = json => ({
-    type: 'RECORD_SAVED_COLOR_REMOVAL',
-    id: json.id
-})
-
 export const decrementSavedColorNum = () => {
     return {
         type: 'DECREMENT_NUM_OF_SAVED_COLORS'
@@ -73,19 +68,3 @@ export const removeColor = (id, hexColor, isDeviceOnline) => {
         }
     }
 }
-
-/*
-export const removeColor = (id, isDeviceOnline) => {
-
-    return function(dispatch) {
-  
-        dispatch(deleteColor());
-  
-        return buildRequest({ mainEndpoint: 'UserColors', method: 'DELETE', params: { id: id } })
-            .then(json => {
-                    dispatch(recordColorDeletion(json)) // we can dispatch many times here based on the documentation 
-                }
-            )
-    }
-}
-*/
